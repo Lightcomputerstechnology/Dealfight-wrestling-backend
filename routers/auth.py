@@ -1,23 +1,16 @@
-# app/routers/auth.py
-from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
-from app.schemas.user import UserCreate, UserOut
-from app.models.user import User
-from app.core.database import SessionLocal
+from fastapi import HTTPException, status, Form
+from app.schemas.token import Token
+from app.core import security
 
-router = APIRouter()
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-@router.post("/signup", response_model=UserOut)
-def create_user(user: UserCreate, db: Session = Depends(get_db)):
-    db_user = User(username=user.username, email=user.email, hashed_password=user.password)
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
-    return db_user
+@router.post("/login", response_model=Token)
+def login(
+    username: str = Form(...),
+    password: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    user = db.query(User).filter(User.username == username).first()
+    if not user or not security.verify_password(password, user.hashed_password):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    
+    token = security.create_access_token(data={"sub": str(user.id)})
+    return {"access_token": token, "token_type": "bearer"}
