@@ -23,3 +23,7 @@ class WalletOut(BaseModel):
 
     class Config:
         orm_mode = True
+
+xp: int
+level: int
+matches_won: int
