@@ -15,3 +15,10 @@ class UserOut(BaseModel):
 
     class Config:
         orm_mode = True
+
+class WalletOut(BaseModel):
+    coins: int
+    diamonds: int
+
+    class Config:
+        orm_mode = True
