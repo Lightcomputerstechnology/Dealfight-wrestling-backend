@@ -7,6 +7,7 @@ class UserCreate(BaseModel):
     password: str
 
 class UserOut(BaseModel):
+   is_admin: int
     id: int
     username: str
     email: EmailStr
