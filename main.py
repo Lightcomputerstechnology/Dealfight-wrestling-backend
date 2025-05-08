@@ -1,5 +1,6 @@
 
 # app/main.py
+from app.routers import title
 from app.routers import match
 from app.routers import wallet
 from app.routers import wrestler
@@ -18,3 +19,6 @@ app.include_router(wrestler.router, prefix="/wrestlers", tags=["Wrestlers"])
 app.include_router(wallet.router, prefix="/wallet", tags=["Wallet"])
 
 app.include_router(match.router, prefix="/matches", tags=["Matches"])
+
+app.include_router(title.router, prefix="/titles", tags=["Titles"])
+
