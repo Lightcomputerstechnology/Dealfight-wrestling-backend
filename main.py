@@ -1,5 +1,6 @@
 
 # app/main.py
+from app.routers import admin
 from app.routers import report
 from app.routers import replay
 from app.routers import result
@@ -31,4 +32,4 @@ app.include_router(replay.router, prefix="/replays", tags=["Replay"])
 
 app.include_router(report.router, prefix="/report", tags=["Reports"])
 
-
+app.include_router(admin.router, prefix="/admin", tags=["Admin"])
