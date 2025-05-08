@@ -1,5 +1,6 @@
 
 # app/main.py
+from app.routers import replay
 from app.routers import result
 from app.routers import title
 from app.routers import match
@@ -24,5 +25,8 @@ app.include_router(match.router, prefix="/matches", tags=["Matches"])
 app.include_router(title.router, prefix="/titles", tags=["Titles"])
 
 app.include_router(result.router, prefix="/result", tags=["Results"])
+
+app.include_router(replay.router, prefix="/replays", tags=["Replay"])
+
 
 
