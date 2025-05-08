@@ -1,3 +1,4 @@
+from app.core.permissions import admin_required
 from fastapi import HTTPException, status, Form
 from app.schemas.token import Token
 from app.core import security
@@ -14,3 +15,12 @@ def login(
     
     token = security.create_access_token(data={"sub": str(user.id)})
     return {"access_token": token, "token_type": "bearer"}
+
+@router.post("/ban-user")
+def ban_user(user_id: int, db: Session = Depends(get_db), current_user: User = Depends(admin_required)):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    user.is_active = False
+    db.commit()
+    return {"message": f"{user.username} has been banned."}
