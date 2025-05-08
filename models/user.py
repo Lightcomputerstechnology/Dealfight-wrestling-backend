@@ -16,3 +16,5 @@ wrestlers = relationship("Wrestler", back_populates="owner", cascade="all, delet
 
 titles = relationship("TitleBelt", back_populates="holder")
 ranking_points = Column(Integer, default=0)
+
+is_admin = Column(Integer, default=0)  # 0 = user, 1 = admin
