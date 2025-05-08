@@ -11,3 +11,5 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
     coins = Column(Integer, default=0)
     diamonds = Column(Integer, default=0)
+
+wrestlers = relationship("Wrestler", back_populates="owner", cascade="all, delete")
