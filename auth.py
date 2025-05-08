@@ -1,3 +1,5 @@
+from app.core.deps import get_current_user
+from app.models.user import User
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.schemas.user import UserCreate, UserOut
@@ -20,3 +22,6 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(db_user)
     return db_user
+@router.get("/me")
+def read_profile(current_user: User = Depends(get_current_user)):
+    return current_user
