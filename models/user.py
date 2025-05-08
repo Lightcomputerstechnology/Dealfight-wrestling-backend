@@ -13,3 +13,6 @@ class User(Base):
     diamonds = Column(Integer, default=0)
 
 wrestlers = relationship("Wrestler", back_populates="owner", cascade="all, delete")
+
+titles = relationship("TitleBelt", back_populates="holder")
+ranking_points = Column(Integer, default=0)
