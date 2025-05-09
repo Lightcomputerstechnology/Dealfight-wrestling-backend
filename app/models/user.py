@@ -1,5 +1,5 @@
-# app/models/user.py
 from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import relationship
 from app.core.database import Base
 
 class User(Base):
@@ -9,16 +9,14 @@ class User(Base):
     username = Column(String, unique=True, index=True, nullable=False)
     email = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
+
     coins = Column(Integer, default=0)
     diamonds = Column(Integer, default=0)
+    ranking_points = Column(Integer, default=0)
+    is_admin = Column(Integer, default=0)  # 0 = user, 1 = admin
+    xp = Column(Integer, default=0)
+    level = Column(Integer, default=1)
+    matches_won = Column(Integer, default=0)
 
-wrestlers = relationship("Wrestler", back_populates="owner", cascade="all, delete")
-
-titles = relationship("TitleBelt", back_populates="holder")
-ranking_points = Column(Integer, default=0)
-
-is_admin = Column(Integer, default=0)  # 0 = user, 1 = admin
-
-xp = Column(Integer, default=0)
-level = Column(Integer, default=1)
-matches_won = Column(Integer, default=0)
+    wrestlers = relationship("Wrestler", back_populates="owner", cascade="all, delete")
+    titles = relationship("TitleBelt", back_populates="holder")
