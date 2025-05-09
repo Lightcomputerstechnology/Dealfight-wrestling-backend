@@ -8,3 +8,4 @@ python-jose[cryptography]
 alembic
 python-dotenv
 pydantic[email]
+psycopg2-binary
