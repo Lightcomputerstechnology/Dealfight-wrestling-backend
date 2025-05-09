@@ -3,6 +3,8 @@ from app.routers import auth, report, wallet
 
 app = FastAPI(title="Dealfight Wrestling API")
 
+app.include_router(wallet.router, prefix="/wallet", tags=["Wallet"])
+
 @app.get("/")
 def root():
     return {"message": "Welcome to Dealfight Wrestling API"}
