@@ -1,3 +1,4 @@
+from app.main import app  # This imports your FastAPI app instance
 import subprocess
 from fastapi import FastAPI
 
