@@ -1,4 +1,3 @@
-from app.main import app
 import subprocess
 from fastapi import FastAPI
 
