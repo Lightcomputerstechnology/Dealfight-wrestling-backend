@@ -1,1 +1,1 @@
-from .report import ReportCreate
+from app.schemas import ReportCreate
