@@ -1,3 +1,4 @@
+import subprocess
 from app.routers import auth, report, wallet, wrestler, match, title, replay, admin
 from app.routers import auth, report, wallet, wrestler, match, title, replay
 from app.routers import auth, report, wallet, wrestler, match, title
@@ -26,3 +27,9 @@ app.include_router(title.router, prefix="/title", tags=["Title"])
 app.include_router(replay.router, prefix="/replay", tags=["Replay"])
 
 app.include_router(admin.router, prefix="/admin", tags=["Admin"])
+
+# Run alembic upgrade head automatically on startup
+try:
+    subprocess.run(["alembic", "upgrade", "head"], check=True)
+except Exception as e:
+    print("Alembic migration failed:", e)
