@@ -16,15 +16,20 @@ def get_db():
         db.close()
 
 @router.post("/create")
-def create_wrestler(wrestler: WrestlerCreate, db: Session = Depends(get_db), user=Depends(get_current_user)):
-    db_user = db.query(User).filter(User.username == user).first()
-    new = Wrestler(**wrestler.dict(), owner_id=db_user.id)
+def create_wrestler(
+    wrestler: WrestlerCreate,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)
+):
+    new = Wrestler(**wrestler.dict(), owner_id=user.id)
     db.add(new)
     db.commit()
     db.refresh(new)
     return {"message": "Wrestler created", "id": new.id}
 
 @router.get("/my-wrestlers")
-def my_wrestlers(db: Session = Depends(get_db), user=Depends(get_current_user)):
-    db_user = db.query(User).filter(User.username == user).first()
-    return db.query(Wrestler).filter(Wrestler.owner_id == db_user.id).all()
+def my_wrestlers(
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)
+):
+    return db.query(Wrestler).filter(Wrestler.owner_id == user.id).all()
