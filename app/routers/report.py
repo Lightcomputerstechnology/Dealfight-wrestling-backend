@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, status
-from app.schemas.report import ReportCreate  # Corrected import path
+from app.schemas.report import ReportCreate
 
 router = APIRouter()
 
