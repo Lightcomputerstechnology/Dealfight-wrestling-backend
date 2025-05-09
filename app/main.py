@@ -1,6 +1,5 @@
 from fastapi import FastAPI
-from app.routers import auth, report
-
+from app.routers import auth, report, wallet
 app = FastAPI(title="Dealfight Wrestling API")
 
 @app.get("/")
