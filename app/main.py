@@ -1,3 +1,4 @@
+from app.routers import auth, report, wallet, wrestler
 from fastapi import FastAPI
 from app.routers import auth, report, wallet
 
@@ -11,3 +12,5 @@ def root():
 
 app.include_router(auth.router, prefix="/auth", tags=["Auth"])
 app.include_router(report.router, prefix="/report", tags=["Reports"])
+
+app.include_router(wrestler.router, prefix="/wrestler", tags=["Wrestler"])
