@@ -1,7 +1,9 @@
 schemas/report.py
 
 from pydantic import BaseModel
+from typing import Optional
 
 class ReportCreate(BaseModel):
-    reported_id: int
-    reason: str
+    title: str
+    description: Optional[str] = None
+    user_id: int
