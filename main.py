@@ -1,5 +1,3 @@
-# main.py
-
 from routers import admin
 from routers import report
 from routers import replay
