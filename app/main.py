@@ -1,3 +1,4 @@
+from app.routers import auth, report, wallet, wrestler, match, title, replay
 from app.routers import auth, report, wallet, wrestler, match, title
 from app.routers import auth, report, wallet, wrestler, match
 from app.routers import auth, report, wallet, wrestler
@@ -20,3 +21,5 @@ app.include_router(wrestler.router, prefix="/wrestler", tags=["Wrestler"])
 app.include_router(match.router, prefix="/match", tags=["Match"])
 
 app.include_router(title.router, prefix="/title", tags=["Title"])
+
+app.include_router(replay.router, prefix="/replay", tags=["Replay"])
