@@ -10,8 +10,8 @@ from sqlalchemy.orm import Session
 from app.models.user import User
 from app.core.database import SessionLocal
 
-# ↓ provide defaults if env vars are unset
-SECRET_KEY = os.getenv("SECRET_KEY", "supersecretkey")
+# ↓ Provide defaults if these aren’t set in Render
+SECRET_KEY = os.getenv("SECRET_KEY", "super-secret-key")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
 
@@ -41,6 +41,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         user_id: int = payload.get("sub")
     except JWTError:
         raise credentials_exception
+
     user = db.query(User).filter(User.id == user_id).first()
     if user is None:
         raise credentials_exception
