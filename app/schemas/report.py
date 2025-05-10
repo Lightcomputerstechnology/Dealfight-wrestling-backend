@@ -6,6 +6,12 @@ class ReportCreate(BaseModel):
     issue: str
     details: Optional[str] = None
 
-    model_config = {
-        "from_attributes": True
-    }
+class ReportOut(BaseModel):
+    id: int
+    match_id: int
+    reporter_id: int
+    issue: str
+    details: Optional[str]
+
+    class Config:
+        from_attributes = True
