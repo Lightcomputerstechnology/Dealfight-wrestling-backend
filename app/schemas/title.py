@@ -5,6 +5,10 @@ class TitleAssign(BaseModel):
     type: Literal["World", "Tag Team", "Women"]
     holder_id: int
 
-    model_config = {
-        "from_attributes": True
-    }
+class TitleOut(BaseModel):
+    id: int
+    type: Literal["World", "Tag Team", "Women"]
+    holder_id: int
+
+    class Config:
+        from_attributes = True
