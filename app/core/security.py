@@ -1,3 +1,5 @@
+# app/core/security.py
+
 import os
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
@@ -8,9 +10,10 @@ from sqlalchemy.orm import Session
 from app.models.user import User
 from app.core.database import SessionLocal
 
-SECRET_KEY = os.getenv("SECRET_KEY")
-ALGORITHM = os.getenv("ALGORITHM")
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
+# ↓ provide defaults if env vars are unset
+SECRET_KEY = os.getenv("SECRET_KEY", "supersecretkey")
+ALGORITHM = os.getenv("ALGORITHM", "HS256")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
 
