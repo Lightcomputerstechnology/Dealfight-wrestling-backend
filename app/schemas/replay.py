@@ -3,8 +3,13 @@ from typing import List
 
 class ReplayLog(BaseModel):
     match_id: int
-    events: List[str]  # e.g. ["strike", "block", "tag"]
+    events: List[str]  # e.g., ["strike", "tag", "block"]
 
-    model_config = {
-        "from_attributes": True
-    }
+class ReplayOut(BaseModel):
+    id: int
+    match_id: int
+    player_id: int
+    events: List[str]
+
+    class Config:
+        from_attributes = True
