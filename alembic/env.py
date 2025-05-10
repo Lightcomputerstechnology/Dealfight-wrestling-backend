@@ -1,36 +1,59 @@
-import os
+# alembic/env.py
+import sys, os
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
+# ───────────────────── 1.  Make project root importable ─────────────────────
+# /alembic/env.py lives one level below the repo root, so we append ".."
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+# ─────────────────────────────────────────────────────────────────────────────
+
+from sqlalchemy import engine_from_config, pool
 from alembic import context
 
-# this is the Alembic Config object
+# This is the Alembic Config object, which provides access to the values
+# in your alembic.ini file.
 config = context.config
+
+# Interpret the config file for Python logging.
 fileConfig(config.config_file_name)
 
-# add your model's MetaData here
-from app.core.database import Base
+# Add your model's MetaData here
+from app.core.database import Base  # now imports correctly
 target_metadata = Base.metadata
 
-def run_migrations_offline():
+
+# ────────────────────────── helper functions ────────────────────────────────
+def run_migrations_offline() -> None:
+    """Run migrations in 'offline' mode."""
     url = os.getenv("DATABASE_URL")
-    context.configure(url=url, target_metadata=target_metadata, literal_binds=True)
+    context.configure(
+        url=url,
+        target_metadata=target_metadata,
+        literal_binds=True,
+    )
     with context.begin_transaction():
         context.run_migrations()
 
-def run_migrations_online():
+
+def run_migrations_online() -> None:
+    """Run migrations in 'online' mode."""
     connectable = engine_from_config(
         config.get_section(config.config_ini_section),
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
-        url=os.getenv("DATABASE_URL")
+        url=os.getenv("DATABASE_URL"),
     )
+
     with connectable.connect() as connection:
-        context.configure(connection=connection, target_metadata=target_metadata)
+        context.configure(
+            connection=connection,
+            target_metadata=target_metadata,
+        )
         with context.begin_transaction():
             context.run_migrations()
 
+
+# ────────────────────────────── entrypoint ──────────────────────────────────
 if context.is_offline_mode():
     run_migrations_offline()
 else:
