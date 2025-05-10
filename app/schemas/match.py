@@ -3,8 +3,14 @@ from typing import Literal, Optional
 
 class MatchCreate(BaseModel):
     type: Literal["single", "tag"] = "single"
-    opponent_id: Optional[int] = None  # can be None for auto-matching
+    opponent_id: Optional[int] = None
 
-    model_config = {
-        "from_attributes": True
-    }
+class MatchOut(BaseModel):
+    id: int
+    type: Literal["single", "tag"]
+    status: str
+    player1_id: int
+    player2_id: Optional[int]
+
+    class Config:
+        from_attributes = True
