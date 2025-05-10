@@ -20,7 +20,7 @@ def get_db():
 def log_replay(
     log: ReplayLog,
     db: Session = Depends(get_db),
-    user=Depends(get_current_user),
+    user = Depends(get_current_user),
 ):
     new = Replay(
         match_id=log.match_id,
