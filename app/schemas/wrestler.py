@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from app.schemas.wrestler import WrestlerCreate
+from typing import List
+from app.schemas.wrestler import WrestlerCreate, WrestlerOut
 from app.models.wrestler import Wrestler
 from app.models.user import User
 from app.core.security import get_current_user
@@ -15,7 +16,7 @@ def get_db():
     finally:
         db.close()
 
-@router.post("/create")
+@router.post("/create", response_model=WrestlerOut)
 def create_wrestler(
     wrestler: WrestlerCreate,
     db: Session = Depends(get_db),
@@ -25,9 +26,9 @@ def create_wrestler(
     db.add(new)
     db.commit()
     db.refresh(new)
-    return {"message": "Wrestler created", "id": new.id}
+    return new
 
-@router.get("/my-wrestlers")
+@router.get("/my-wrestlers", response_model=List[WrestlerOut])
 def my_wrestlers(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user)
