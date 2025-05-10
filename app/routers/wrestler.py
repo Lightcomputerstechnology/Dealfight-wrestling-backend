@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from typing import List
 from app.schemas.wrestler import WrestlerCreate, WrestlerOut
-from app.schemas.response import MessageResponse  # ✅ Added
 from app.models.wrestler import Wrestler
+from app.models.user import User
 from app.core.security import get_current_user
 from app.core.database import SessionLocal
 
@@ -16,11 +16,11 @@ def get_db():
     finally:
         db.close()
 
-@router.post("/create", response_model=MessageResponse)  # ✅ Updated from dict to proper model
+@router.post("/create", response_model=dict)
 def create_wrestler(
     wrestler: WrestlerCreate,
     db: Session = Depends(get_db),
-    user = Depends(get_current_user)
+    user: User = Depends(get_current_user)  # ✅ Must be annotated as User
 ):
     new = Wrestler(**wrestler.dict(), owner_id=user.id)
     db.add(new)
@@ -31,6 +31,6 @@ def create_wrestler(
 @router.get("/my-wrestlers", response_model=List[WrestlerOut])
 def my_wrestlers(
     db: Session = Depends(get_db),
-    user = Depends(get_current_user)
+    user: User = Depends(get_current_user)  # ✅ Same here
 ):
     return db.query(Wrestler).filter(Wrestler.owner_id == user.id).all()
