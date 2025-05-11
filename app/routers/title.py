@@ -1,18 +1,14 @@
-# app/routers/title.py
-
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
 from app.schemas.title import TitleCreate
-from app.models.title import TitleBelt as Title
+from app.models.title import TitleBelt
 from app.core.database import SessionLocal
 from app.core.security import get_current_user
 from app.models.user import User
 
 router = APIRouter(prefix="/titles", tags=["Titles"])
 
-
-# ───────────────────────── dependencies ──────────────────────────
 def get_db():
     db = SessionLocal()
     try:
@@ -20,23 +16,24 @@ def get_db():
     finally:
         db.close()
 
-
-# ─────────────────────────── routes ──────────────────────────────
 @router.post("/", status_code=status.HTTP_201_CREATED)
 def create_title(
     payload: TitleCreate,
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user),
 ):
-    """
-    Create a new wrestling title (championship).
-    """
-    title = Title(
-        name=payload.name,
-        description=payload.description,
-        created_by=user.id,
+    if not user.is_admin:
+        return {"error": "Only admin can assign titles."}
+
+    new_title = TitleBelt(
+        type=payload.type,
+        holder_id=payload.holder_id,
     )
-    db.add(title)
+    db.add(new_title)
     db.commit()
-    db.refresh(title)
-    return title
+    db.refresh(new_title)
+    return new_title
+
+@router.get("/")
+def list_titles(db: Session = Depends(get_db)):
+    return db.query(TitleBelt).all()
