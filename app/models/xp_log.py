@@ -1,11 +1,16 @@
+from sqlalchemy import Column, Integer, DateTime, ForeignKey
+from sqlalchemy.orm import relationship
+from datetime import datetime
+from app.core.database import Base          # << line must exist!
+
 class XPLog(Base):
     __tablename__ = "xp_logs"
-    __table_args__ = {"extend_existing": True}   # <-- add this line
+    __table_args__ = {"extend_existing": True}
 
-    id         = Column(Integer, primary_key=True, index=True)
-    user_id    = Column(Integer, ForeignKey("users.id"), nullable=False)
-    xp_gained  = Column(Integer, nullable=False)
-    level      = Column(Integer, nullable=False)
-    timestamp  = Column(DateTime, default=datetime.utcnow)
+    id        = Column(Integer, primary_key=True, index=True)
+    user_id   = Column(Integer, ForeignKey("users.id"), nullable=False)
+    xp_gained = Column(Integer, nullable=False)
+    level     = Column(Integer, nullable=False)
+    timestamp = Column(DateTime, default=datetime.utcnow)
 
     user = relationship("User")
