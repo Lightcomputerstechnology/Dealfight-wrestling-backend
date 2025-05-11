@@ -1,22 +1,13 @@
-# app/schemas/faq.py
+# app/models/faq.py
 
-from pydantic import BaseModel
+from sqlalchemy import Column, Integer, String, DateTime
 from datetime import datetime
+from app.core.database import Base
 
-class FAQBase(BaseModel):
-    question: str
-    answer: str
+class FAQ(Base):
+    __tablename__ = "faqs"
 
-class FAQCreate(FAQBase):
-    pass
-
-class FAQUpdate(FAQBase):
-    pass  # You can also make fields optional here if partial updates are allowed
-
-class FAQOut(FAQBase):
-    id: int
-    created_at: datetime
-
-    model_config = {
-        "from_attributes": True
-    }
+    id = Column(Integer, primary_key=True, index=True)
+    question = Column(String, nullable=False)
+    answer = Column(String, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
