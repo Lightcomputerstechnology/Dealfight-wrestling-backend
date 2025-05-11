@@ -1,13 +1,14 @@
 # app/models/xp_log.py
 
+from datetime import datetime
 from sqlalchemy import Column, Integer, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
-from datetime import datetime
-from app.core.database import Base        # ← Make sure this import is present!
+from app.core.database import Base
 
 class XPLog(Base):
     __tablename__ = "xp_logs"
-    # tell SQLAlchemy “this table already exists, just add to the MetaData”
+
+    # ← this tells SQLAlchemy “if this table is already in Base.metadata, just merge these columns”
     __table_args__ = {"extend_existing": True}
 
     id         = Column(Integer, primary_key=True, index=True)
@@ -16,4 +17,4 @@ class XPLog(Base):
     level      = Column(Integer, nullable=False)
     timestamp  = Column(DateTime, default=datetime.utcnow)
 
-    user       = relationship("User")
+    user       = relationship("User", backref="xp_logs")
