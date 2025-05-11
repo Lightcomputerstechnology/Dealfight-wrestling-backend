@@ -60,7 +60,7 @@ app.include_router(title.router,        prefix="/titles",        tags=["Titles"]
 app.include_router(wallet.router,       prefix="/wallet",        tags=["Wallet"])
 app.include_router(notification.router, prefix="/notifications", tags=["Notifications"])
 app.include_router(referral.router,     prefix="/referrals",     tags=["Referrals"])
-app.include_router(appeal.router,       prefix="/appeals",       tags=["Ban Appeals"])
+app.include_router(appeal.router,       prefix="/appeals",       tags=["Appeals"])
 app.include_router(xp.router,           prefix="/xp",            tags=["XP System"])
 app.include_router(faq.router,          prefix="/faq",           tags=["FAQ"])
 app.include_router(blog.router,         prefix="/blog",          tags=["Blog"])
