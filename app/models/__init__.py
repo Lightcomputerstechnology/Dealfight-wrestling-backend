@@ -1,3 +1,4 @@
+from .settings import Setting
 from .user import User
 from .xp_tracker import XPTracker
 from .wrestler import Wrestler
