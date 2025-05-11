@@ -1,26 +1,42 @@
-# alembic/env.py
 import sys, os
 from logging.config import fileConfig
-
-# ───────────────────── 1.  Make project root importable ─────────────────────
-# /alembic/env.py lives one level below the repo root, so we append ".."
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-# ─────────────────────────────────────────────────────────────────────────────
-
 from sqlalchemy import engine_from_config, pool
 from alembic import context
 
-# This is the Alembic Config object, which provides access to the values
-# in your alembic.ini file.
+# ───────────────────── 1.  Make project root importable ─────────────────────
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Alembic Config object
 config = context.config
 
 # Interpret the config file for Python logging.
 fileConfig(config.config_file_name)
 
-# Add your model's MetaData here
-from app.core.database import Base  # now imports correctly
-target_metadata = Base.metadata
+# Import Base and models
+from app.core.database import Base
 
+# Import all model modules so Alembic can detect every table
+from app.models import (
+    user,
+    xp_log,
+    wrestler,
+    wallet,
+    title,
+    match,
+    support,
+    report,
+    replay,
+    referral,
+    notification,
+    admin_log,
+    appeal,
+    blog,
+    faq,
+)
+
+# Let Alembic know about the models
+target_metadata = Base.metadata
 
 # ────────────────────────── helper functions ────────────────────────────────
 def run_migrations_offline() -> None:
@@ -51,7 +67,6 @@ def run_migrations_online() -> None:
         )
         with context.begin_transaction():
             context.run_migrations()
-
 
 # ────────────────────────────── entrypoint ──────────────────────────────────
 if context.is_offline_mode():
