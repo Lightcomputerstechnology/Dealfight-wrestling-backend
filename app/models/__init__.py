@@ -1,4 +1,3 @@
-from .user_setting import UserSetting
 from .settings import Setting
 from .user import User
 from .xp_tracker import XPTracker
