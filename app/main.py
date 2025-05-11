@@ -2,6 +2,8 @@ import logging
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse
+from app.routers import user_setting
+
 
 # Import routers
 from app.routers import (
@@ -28,6 +30,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(user_setting.router)
 app.add_middleware(RateLimiterMiddleware)
 app.add_middleware(PaginationMiddleware)
 
