@@ -1,22 +1,31 @@
-# app/schemas/faq.py
+from fastapi import APIRouter, Depends, status
+from sqlalchemy.orm import Session
 
-from pydantic import BaseModel
-from datetime import datetime
+from app.models.faq import FAQ
+from app.schemas.faq import FAQCreate, FAQOut
+from app.core.database import SessionLocal
+from typing import List
 
-class FAQBase(BaseModel):
-    question: str
-    answer: str
+router = APIRouter(prefix="/faq", tags=["FAQ"])
 
-class FAQCreate(FAQBase):
-    pass
+# DB Dependency
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
-class FAQUpdate(FAQBase):
-    pass
+# GET all FAQs
+@router.get("/", response_model=List[FAQOut])
+def list_faqs(db: Session = Depends(get_db)):
+    return db.query(FAQ).order_by(FAQ.id.desc()).all()
 
-class FAQOut(FAQBase):
-    id: int
-    created_at: datetime
-
-    model_config = {
-        "from_attributes": True
-    }
+# POST create FAQ
+@router.post("/", response_model=FAQOut, status_code=status.HTTP_201_CREATED)
+def create_faq(payload: FAQCreate, db: Session = Depends(get_db)):
+    faq = FAQ(**payload.dict())
+    db.add(faq)
+    db.commit()
+    db.refresh(faq)
+    return faq
