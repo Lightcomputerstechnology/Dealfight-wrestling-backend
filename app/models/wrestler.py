@@ -4,6 +4,7 @@ from app.core.database import Base
 
 class Wrestler(Base):
     __tablename__ = "wrestlers"
+
     id        = Column(Integer, primary_key=True, index=True)
     name      = Column(String, nullable=False)
     gender    = Column(String, nullable=False)
