@@ -1,27 +1,50 @@
-# app/schemas/faq.py
+# app/routers/faq.py
 
-from pydantic import BaseModel, Field
-from typing import Optional
-from datetime import datetime
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+from app.core.database import SessionLocal
+from app.models.faq import FAQ
+from app.schemas.faq import FAQCreate, FAQUpdate, FAQOut
+from app.core.security import get_current_user
+from app.models.user import User
+from typing import List
 
-class FAQBase(BaseModel):
-    question: str = Field(..., min_length=5, max_length=300)
-    answer: str = Field(..., min_length=5)
+router = APIRouter(prefix="/faq", tags=["FAQ"])
 
-class FAQCreate(FAQBase):
-    pass
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
-class FAQUpdate(BaseModel):
-    question: Optional[str] = Field(None, min_length=5, max_length=300)
-    answer: Optional[str] = Field(None, min_length=5)
-    is_active: Optional[bool] = True  # Optional toggle to deactivate FAQ
+@router.get("/", response_model=List[FAQOut])
+def list_faqs(db: Session = Depends(get_db)):
+    return db.query(FAQ).all()
 
-class FAQOut(FAQBase):
-    id: int
-    is_active: bool
-    created_at: datetime
-    updated_at: datetime
+@router.post("/", response_model=FAQOut)
+def create_faq(payload: FAQCreate, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
+    faq = FAQ(**payload.dict())
+    db.add(faq)
+    db.commit()
+    db.refresh(faq)
+    return faq
 
-    model_config = {
-        "from_attributes": True
-    }
+@router.put("/{faq_id}", response_model=FAQOut)
+def update_faq(faq_id: int, payload: FAQUpdate, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
+    faq = db.query(FAQ).filter(FAQ.id == faq_id).first()
+    if not faq:
+        raise HTTPException(status_code=404, detail="FAQ not found")
+    for key, value in payload.dict(exclude_unset=True).items():
+        setattr(faq, key, value)
+    db.commit()
+    return faq
+
+@router.delete("/{faq_id}")
+def delete_faq(faq_id: int, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
+    faq = db.query(FAQ).filter(FAQ.id == faq_id).first()
+    if not faq:
+        raise HTTPException(status_code=404, detail="FAQ not found")
+    db.delete(faq)
+    db.commit()
+    return {"message": "FAQ deleted successfully"}
