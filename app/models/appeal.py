@@ -3,8 +3,8 @@ from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
 from datetime import datetime
 from app.core.database import Base
 
-class BanAppeal(Base):
-    __tablename__ = "ban_appeals"
+class Appeal(Base):
+    __tablename__ = "appeals"
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"))
     reason = Column(String, nullable=False)
