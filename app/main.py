@@ -1,14 +1,18 @@
 # app/main.py
 import logging
 import subprocess
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.responses import JSONResponse
 
 from app.routers import (
     auth, wrestler, match, replay, report, title,
     wallet, notification, referral, appeal, xp,
-    faq, blog, support, leaderboard, settings
+    faq, blog, support, leaderboard, settings,
+    admin_stats
 )
+from app.middleware.rate_limiter import RateLimiterMiddleware
+from app.middleware.pagination import PaginationMiddleware
 from app.core.database import Base, engine
 
 # ────────────────────── Alembic migrations ──────────────────────
@@ -31,6 +35,12 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.add_middleware(RateLimiterMiddleware)
+app.add_middleware(PaginationMiddleware)
+
+@app.exception_handler(404)
+async def custom_404_handler(request: Request, exc):
+    return JSONResponse(status_code=404, content={"error": "Route not found"})
 
 @app.get("/")
 def read_root():
@@ -53,3 +63,4 @@ app.include_router(blog.router,         prefix="/blog",          tags=["Blog"])
 app.include_router(support.router,      prefix="/support",       tags=["Support Chat"])
 app.include_router(leaderboard.router,  prefix="/leaderboard",   tags=["Leaderboard"])
 app.include_router(settings.router,     prefix="/settings",      tags=["Settings"])
+app.include_router(admin_stats.router,  prefix="/admin",         tags=["Admin Stats"])
