@@ -3,19 +3,19 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse
 
+# Import the 'auth' router
+from app.routers import (
+    auth, wrestler, match, replay, report, title,
+    wallet, notification, referral, appeal, xp,
+    faq, blog, support, leaderboard, settings,
+    admin_stats
+)
+from app.middleware.rate_limiter import RateLimiterMiddleware
+from app.middleware.pagination import PaginationMiddleware
 from app.core.database import Base, engine
 
 # ────────────────────────── Directly create all tables ──────────────────────────
-# Comment out migration function
-# def run_migrations() -> None:
-#     try:
-#         alembic_cfg = Config("alembic.ini")
-#         command.upgrade(alembic_cfg, "head")
-#         logging.info("Alembic migration succeeded")
-#     except Exception as exc:
-#         logging.error(f"Alembic migration failed: {exc}")
-
-# Directly create all tables (no Alembic)
+# Directly create all tables (bypassing Alembic entirely)
 Base.metadata.create_all(bind=engine)
 
 # ───────────────────────── FastAPI app ──────────────────────────
