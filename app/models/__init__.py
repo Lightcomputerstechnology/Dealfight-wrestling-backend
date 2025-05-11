@@ -1,5 +1,5 @@
 from .user import User
-from .xp_log import XPLog
+from .xp_tracker import XPTracker
 from .wrestler import Wrestler
 from .wallet import Wallet
 from .title import TitleBelt
