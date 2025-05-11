@@ -5,6 +5,7 @@ from app.core.database import Base
 
 class Replay(Base):
     __tablename__ = "replays"
+
     id         = Column(Integer, primary_key=True, index=True)
     match_id   = Column(Integer, index=True)
     player_id  = Column(Integer, ForeignKey("users.id"))
