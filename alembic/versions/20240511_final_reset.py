@@ -1,16 +1,14 @@
-"""initial clean setup
+"""Final reset of database migrations
 
-Revision ID: 20240511_initial
+Revision ID: 20240511_final_reset
 Revises: 
-Create Date: 2025-05-11 12:00:00
-
+Create Date: 2025-05-11 20:15:00
 """
 from alembic import op
 import sqlalchemy as sa
 import sqlalchemy.dialects.postgresql as pg
 
-# revision identifiers, used by Alembic.
-revision = '20240511_initial'
+revision = '20240511_final_reset'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -112,7 +110,39 @@ def upgrade():
         sa.Column('player2_id', sa.Integer(), sa.ForeignKey('users.id'), nullable=True),
     )
 
+    op.create_table('admin_logs',
+        sa.Column('id', sa.Integer(), primary_key=True, index=True),
+        sa.Column('action', sa.String(), nullable=False),
+        sa.Column('timestamp', sa.DateTime(), nullable=True),
+    )
+
+    op.create_table('appeals',
+        sa.Column('id', sa.Integer(), primary_key=True, index=True),
+        sa.Column('user_id', sa.Integer(), sa.ForeignKey('users.id')),
+        sa.Column('reason', sa.String(), nullable=False),
+        sa.Column('status', sa.String(), default='pending'),
+        sa.Column('created_at', sa.DateTime(), nullable=True),
+    )
+
+    op.create_table('blogs',
+        sa.Column('id', sa.Integer(), primary_key=True, index=True),
+        sa.Column('title', sa.String(), nullable=False),
+        sa.Column('content', sa.Text(), nullable=False),
+        sa.Column('created_at', sa.DateTime(), nullable=True),
+    )
+
+    op.create_table('faqs',
+        sa.Column('id', sa.Integer(), primary_key=True, index=True),
+        sa.Column('question', sa.String(), nullable=False),
+        sa.Column('answer', sa.String(), nullable=False),
+        sa.Column('created_at', sa.DateTime(), nullable=True),
+    )
+
 def downgrade():
+    op.drop_table('faqs')
+    op.drop_table('blogs')
+    op.drop_table('appeals')
+    op.drop_table('admin_logs')
     op.drop_table('matches')
     op.drop_table('notifications')
     op.drop_table('referrals')
