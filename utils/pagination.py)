@@ -1,0 +1,5 @@
+# === 7. Pagination Utility (utils/pagination.py) ===
+
+def paginate(queryset, page: int = 1, limit: int = 10):
+    offset = (page - 1) * limit
+    return queryset.offset(offset).limit(limit).all()
