@@ -10,6 +10,7 @@ class MatchType(str, enum.Enum):
 
 class Match(Base):
     __tablename__ = "matches"
+
     id         = Column(Integer, primary_key=True, index=True)
     type       = Column(Enum(MatchType), default=MatchType.single)
     status     = Column(String, default="pending")
