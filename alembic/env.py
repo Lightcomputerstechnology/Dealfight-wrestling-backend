@@ -13,30 +13,9 @@ config = context.config
 # Interpret the config file for Python logging.
 fileConfig(config.config_file_name)
 
-# Import Base and models
-from app.core.database import Base
-
-# Import all model modules so Alembic can detect every table
-from app.models import (
-    user,
-    xp_log,
-    wrestler,
-    wallet,
-    title,
-    match,
-    support,
-    report,
-    replay,
-    referral,
-    notification,
-    admin_log,
-    appeal,
-    blog,
-    faq,
-)
-
-# Let Alembic know about the models
-target_metadata = Base.metadata
+# Import centralized metadata (no direct model imports!)
+from app.core.metadata import metadata
+target_metadata = metadata
 
 # ────────────────────────── helper functions ────────────────────────────────
 def run_migrations_offline() -> None:
@@ -49,7 +28,6 @@ def run_migrations_offline() -> None:
     )
     with context.begin_transaction():
         context.run_migrations()
-
 
 def run_migrations_online() -> None:
     """Run migrations in 'online' mode."""
