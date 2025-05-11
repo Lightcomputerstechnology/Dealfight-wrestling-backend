@@ -1,9 +1,10 @@
-# app/main.py
 import logging
-import subprocess
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse
+
+from alembic.config import Config
+from alembic import command
 
 from app.routers import (
     auth, wrestler, match, replay, report, title,
@@ -18,13 +19,16 @@ from app.core.database import Base, engine
 # ────────────────────── Alembic migrations ──────────────────────
 def run_migrations() -> None:
     try:
-        subprocess.run(["alembic", "upgrade", "head"], check=True)
+        alembic_cfg = Config("alembic.ini")
+        command.upgrade(alembic_cfg, "head")
         logging.info("Alembic migration succeeded")
-    except subprocess.CalledProcessError as exc:
-        logging.error("Alembic migration failed: %s", exc)
+    except Exception as exc:
+        logging.error(f"Alembic migration failed: {exc}")
 
 run_migrations()
-Base.metadata.create_all(bind=engine)
+
+# Optionally keep this during development; remove in production
+# Base.metadata.create_all(bind=engine)
 
 # ───────────────────────── FastAPI app ──────────────────────────
 app = FastAPI(title="Dealfight Wrestling API")
