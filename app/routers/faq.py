@@ -1,13 +1,9 @@
-# app/routers/faq.py
-
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.core.database import SessionLocal
-from app.models.faq import FAQ
-from app.schemas.faq import FAQCreate, FAQUpdate, FAQOut
 from app.core.security import get_current_user
 from app.models.user import User
-from typing import List
+from app.schemas.faq import FAQCreate, FAQOut, FAQUpdate
 
 router = APIRouter(prefix="/faq", tags=["FAQ"])
 
@@ -18,12 +14,14 @@ def get_db():
     finally:
         db.close()
 
-@router.get("/", response_model=List[FAQOut])
+@router.get("/", response_model=list[FAQOut])
 def list_faqs(db: Session = Depends(get_db)):
+    from app.models.faq import FAQ  # lazy import to avoid circular import
     return db.query(FAQ).all()
 
 @router.post("/", response_model=FAQOut)
 def create_faq(payload: FAQCreate, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
+    from app.models.faq import FAQ
     faq = FAQ(**payload.dict())
     db.add(faq)
     db.commit()
@@ -32,19 +30,21 @@ def create_faq(payload: FAQCreate, db: Session = Depends(get_db), user: User = D
 
 @router.put("/{faq_id}", response_model=FAQOut)
 def update_faq(faq_id: int, payload: FAQUpdate, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
+    from app.models.faq import FAQ
     faq = db.query(FAQ).filter(FAQ.id == faq_id).first()
     if not faq:
         raise HTTPException(status_code=404, detail="FAQ not found")
-    for key, value in payload.dict(exclude_unset=True).items():
+    for key, value in payload.dict().items():
         setattr(faq, key, value)
     db.commit()
     return faq
 
 @router.delete("/{faq_id}")
 def delete_faq(faq_id: int, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
+    from app.models.faq import FAQ
     faq = db.query(FAQ).filter(FAQ.id == faq_id).first()
     if not faq:
         raise HTTPException(status_code=404, detail="FAQ not found")
     db.delete(faq)
     db.commit()
-    return {"message": "FAQ deleted successfully"}
+    return {"message": "FAQ deleted"}
