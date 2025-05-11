@@ -3,22 +3,22 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse
 
-# Import the 'auth' router
+# Import routers
 from app.routers import (
     auth, wrestler, match, replay, report, title,
     wallet, notification, referral, appeal, xp,
     faq, blog, support, leaderboard, settings,
     admin_stats
 )
+
 from app.middleware.rate_limiter import RateLimiterMiddleware
 from app.middleware.pagination import PaginationMiddleware
 from app.core.database import Base, engine
 
-# ────────────────────────── Directly create all tables ──────────────────────────
-# Directly create all tables (bypassing Alembic entirely)
+# ─────────────────────── Create Tables Directly ───────────────────────
 Base.metadata.create_all(bind=engine)
 
-# ───────────────────────── FastAPI app ──────────────────────────
+# ─────────────────────────── FastAPI App ──────────────────────────────
 app = FastAPI(title="Dealfight Wrestling API")
 
 app.add_middleware(
@@ -28,6 +28,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.add_middleware(RateLimiterMiddleware)
+app.add_middleware(PaginationMiddleware)
+
 @app.exception_handler(404)
 async def custom_404_handler(request: Request, exc):
     return JSONResponse(status_code=404, content={"error": "Route not found"})
@@ -36,7 +39,7 @@ async def custom_404_handler(request: Request, exc):
 def read_root():
     return {"message": "Welcome to Dealfight Wrestling API"}
 
-# ───────────────────────── Include routers ──────────────────────
+# ─────────────────────────── Include Routers ──────────────────────────
 app.include_router(auth.router,         prefix="/auth",          tags=["Auth"])
 app.include_router(wrestler.router,     prefix="/wrestlers",     tags=["Wrestlers"])
 app.include_router(match.router,        prefix="/matches",       tags=["Matches"])
