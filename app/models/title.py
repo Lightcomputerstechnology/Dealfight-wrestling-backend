@@ -11,6 +11,7 @@ class TitleType(str, enum.Enum):
 
 class TitleBelt(Base):
     __tablename__ = "title_belts"
+
     id         = Column(Integer, primary_key=True, index=True)
     type       = Column(Enum(TitleType), nullable=False)
     holder_id  = Column(Integer, ForeignKey("users.id"))
