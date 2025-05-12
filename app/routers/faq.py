@@ -1,12 +1,12 @@
-# app/routers/faq.py
-
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
+from typing import List, Optional
 
+from app.models.faq import FAQ
+from app.models.user import User
+from app.schemas.faq import FAQCreate, FAQUpdate, FAQOut
 from app.core.database import SessionLocal
 from app.core.security import get_current_user
-from app.models.user import User
-from app.schemas.faq import FAQCreate, FAQOut, FAQUpdate
 
 router = APIRouter(prefix="/faq", tags=["FAQ"])
 
@@ -17,16 +17,28 @@ def get_db():
     finally:
         db.close()
 
-@router.get("/", response_model=list[FAQOut])
-def list_faqs(db: Session = Depends(get_db)):
-    from app.models.faq import FAQ  # lazy import
-    return db.query(FAQ).all()
+@router.get("/", response_model=List[FAQOut])
+def list_faqs(
+    category: Optional[str] = Query(None),
+    search: Optional[str] = Query(None),
+    db: Session = Depends(get_db)
+):
+    """List FAQs, optionally filter by category or search keyword."""
+    query = db.query(FAQ).filter(FAQ.is_active == True)
 
-@router.post("/", response_model=FAQOut)
+    if category:
+        query = query.filter(FAQ.category == category)
+
+    if search:
+        query = query.filter(FAQ.question.ilike(f"%{search}%"))
+
+    return query.order_by(FAQ.id.desc()).all()
+
+@router.post("/", response_model=FAQOut, status_code=status.HTTP_201_CREATED)
 def create_faq(payload: FAQCreate, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
-    from app.models.faq import FAQ
+    """Create a new FAQ (admin only)."""
     if user.role != "admin":
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
+        raise HTTPException(status_code=403, detail="Only admins can create FAQs.")
     faq = FAQ(**payload.dict())
     db.add(faq)
     db.commit()
@@ -35,9 +47,9 @@ def create_faq(payload: FAQCreate, db: Session = Depends(get_db), user: User = D
 
 @router.put("/{faq_id}", response_model=FAQOut)
 def update_faq(faq_id: int, payload: FAQUpdate, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
-    from app.models.faq import FAQ
+    """Update a FAQ (admin only)."""
     if user.role != "admin":
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
+        raise HTTPException(status_code=403, detail="Only admins can update FAQs.")
     faq = db.query(FAQ).filter(FAQ.id == faq_id).first()
     if not faq:
         raise HTTPException(status_code=404, detail="FAQ not found")
@@ -49,12 +61,12 @@ def update_faq(faq_id: int, payload: FAQUpdate, db: Session = Depends(get_db), u
 
 @router.delete("/{faq_id}")
 def delete_faq(faq_id: int, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
-    from app.models.faq import FAQ
+    """Delete a FAQ (admin only)."""
     if user.role != "admin":
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
+        raise HTTPException(status_code=403, detail="Only admins can delete FAQs.")
     faq = db.query(FAQ).filter(FAQ.id == faq_id).first()
     if not faq:
         raise HTTPException(status_code=404, detail="FAQ not found")
     db.delete(faq)
     db.commit()
-    return {"detail": "FAQ deleted"}
+    return {"detail": "FAQ deleted successfully"}
