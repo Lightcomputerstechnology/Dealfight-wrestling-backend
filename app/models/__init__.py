@@ -12,5 +12,4 @@ from .admin_log import AdminLog
 from .appeal import Appeal
 from .settings import Setting, UserSetting
 from .blog import Blog
-from .faq import FAQ  # Import FAQ LAST to avoid circular issues
 from .xp_tracker import XPTracker  # ✅ Corrected to match renamed file
