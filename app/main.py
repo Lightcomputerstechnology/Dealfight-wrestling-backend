@@ -2,10 +2,8 @@ import logging
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse
+
 from app.routers import user_setting
-
-
-# Import routers
 from app.routers import (
     auth, wrestler, match, replay, report, title,
     wallet, notification, referral, appeal, xp,
@@ -15,10 +13,7 @@ from app.routers import (
 
 from app.middleware.rate_limiter import RateLimiterMiddleware
 from app.middleware.pagination import PaginationMiddleware
-from app.core.database import Base, engine
-
-# ─────────────────────── Create Tables Directly ───────────────────────
-Base.metadata.create_all(bind=engine)
+# from app.core.database import Base, engine  # ❌ No longer needed for auto table creation
 
 # ─────────────────────────── FastAPI App ──────────────────────────────
 app = FastAPI(title="Dealfight Wrestling API")
@@ -60,3 +55,6 @@ app.include_router(support.router,      prefix="/support",       tags=["Support 
 app.include_router(leaderboard.router,  prefix="/leaderboard",   tags=["Leaderboard"])
 app.include_router(settings.router,     prefix="/settings",      tags=["Settings"])
 app.include_router(admin_stats.router,  prefix="/admin",         tags=["Admin Stats"])
+
+# ───────────────────── Alembic will handle tables ─────────────────────
+logging.info("Alembic migration system enabled. Skipping Base.metadata.create_all()")
