@@ -1,6 +1,4 @@
-from app.models.settings import UserSetting
 from .user import User
-from .xp_tracker import XPTracker
 from .wrestler import Wrestler
 from .wallet import Wallet
 from .title import TitleBelt
@@ -12,5 +10,7 @@ from .referral import Referral
 from .notification import Notification
 from .admin_log import AdminLog
 from .appeal import Appeal
+from .settings import Setting, UserSetting
 from .blog import Blog
-from .faq import FAQ
+from .xp_log import XPLog
+from .faq import FAQ  # Import FAQ LAST to avoid circular issues
