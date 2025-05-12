@@ -1,14 +1,21 @@
-### app/schemas/faq.py
+# app/schemas/faq.py
 from pydantic import BaseModel
+from datetime import datetime
 
-class FAQCreate(BaseModel):
+class FAQBase(BaseModel):
     question: str
     answer: str
 
-class FAQOut(BaseModel):
+class FAQCreate(FAQBase):
+    pass
+
+class FAQUpdate(FAQBase):
+    pass
+
+class FAQOut(FAQBase):
     id: int
-    question: str
-    answer: str
+    created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = {
+        "from_attributes": True
+    }
